@@ -14,14 +14,31 @@ namespace BarcodeScanner
             InitializeComponent();
             barcodeScanner.Options = new ZXing.Net.Maui.BarcodeReaderOptions
             {
-                Formats = 
-                    ZXing.Net.Maui.BarcodeFormat.UpcA | 
+                Formats =
+                    ZXing.Net.Maui.BarcodeFormat.UpcA |
                     ZXing.Net.Maui.BarcodeFormat.UpcE |
                     ZXing.Net.Maui.BarcodeFormat.Code128 |
                     ZXing.Net.Maui.BarcodeFormat.QrCode,
                 TryHarder = true,
             };
-            barcodeScanner.IsEnabled = true;
+            _ = CheckCameraPermission();
+        }
+        async Task CheckCameraPermission()
+        {
+            // I notice that, especially on a "first run" after installing
+            // the demo app, the ZXing scanner might not want to run. And I 
+            // 'think' this is a sequencing issue with obtaining the CAMERA
+            // permission. This is an attempted workaround.
+            barcodeScanner.IsEnabled = false;
+            while (true)
+            {
+                if (PermissionStatus.Granted == await Permissions.CheckStatusAsync<Permissions.Camera>())
+                {
+                    barcodeScanner.IsEnabled = true;
+                    break;
+                }
+                await Task.Delay(TimeSpan.FromSeconds(1));
+            }
         }
         new BarcodeScannerBindingContext BindingContext => (BarcodeScannerBindingContext)base.BindingContext;
         private void OnBarcodeDetected(object sender, ZXing.Net.Maui.BarcodeDetectionEventArgs e)
@@ -41,7 +58,7 @@ namespace BarcodeScanner
         public ICommand ScanCommand { get; private set; }
         private void OnScan(object o)
         {
-            if(UseExternal)
+            if (UseExternal)
             {
                 IsDetectingExternal = true;
             }
@@ -81,7 +98,7 @@ namespace BarcodeScanner
                 }
             }
         }
-        bool _useExternal = default;
+        bool _useExternal = false;
 
 
         public bool IsDetectingInternal
@@ -97,7 +114,7 @@ namespace BarcodeScanner
                 IsDetecting = value;
             }
         }
-        bool _isDetectingInternal = default;
+        bool _isDetectingInternal = false;
 
         public bool IsDetectingExternal
         {
@@ -128,7 +145,7 @@ namespace BarcodeScanner
         }
         string _barcodeLabelText = "|";
 
-        protected virtual void OnPropertyChanged([CallerMemberName]string? propertyName = null) =>
+        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null) =>
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         public event PropertyChangedEventHandler? PropertyChanged;
     }

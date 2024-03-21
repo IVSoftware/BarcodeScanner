@@ -12,8 +12,7 @@
         <local:InvertBoolConverter x:Key="InvertBoolConverter"/>
     </ContentPage.Resources>
     <Grid>
-        <ScrollView
-            IsVisible="{Binding IsDetecting, Converter={StaticResource InvertBoolConverter}}">
+        <ScrollView>
             <VerticalStackLayout
                 Padding="30,0"
                 Spacing="25">
@@ -88,10 +87,11 @@
             </Grid>
         </Grid>
         <Grid
-            IsVisible="{Binding IsDetectingExternal}">
+            IsVisible="{Binding IsDetectingExternal}"
+            BackgroundColor="Transparent">
             <Frame
-                Opacity="0.7"
-                BackgroundColor="DarkSlateGray">
+                Opacity="0.8"
+                BackgroundColor="#222222">
             </Frame>
             <ActivityIndicator
                 HeightRequest="80"
