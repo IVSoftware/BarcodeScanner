@@ -4,13 +4,11 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"             
     xmlns:xzing="clr-namespace:ZXing.Net.Maui.Controls;assembly=ZXing.Net.MAUI.Controls"             
     xmlns:local="clr-namespace:BarcodeScanner"             
-    x:Class="BarcodeScanner.MainPage">
+    x:Class="BarcodeScanner.MainPage"
+    Shell.NavBarIsVisible="{Binding IsDetecting, Converter={StaticResource InvertBoolConverter}}">
     <ContentPage.BindingContext>
         <local:BarcodeScannerBindingContext />
     </ContentPage.BindingContext>
-    <ContentPage.Resources>
-        <local:InvertBoolConverter x:Key="InvertBoolConverter"/>
-    </ContentPage.Resources>
     <Grid>
         <ScrollView>
             <VerticalStackLayout
@@ -95,6 +93,7 @@
             </Frame>
             <ActivityIndicator
                 HeightRequest="80"
+                WidthRequest="80"
                 VerticalOptions="Start"
                 IsRunning="True"
                 Margin="0,25"
@@ -117,9 +116,11 @@
                 HeightRequest="40"
                 WidthRequest="200"
                 Command="{Binding CancelCommand}"/>
-            <Editor 
-                Focused="OnEditorFocused"
-                BackgroundColor="LightCoral"/>
+            <Editor
+                x:Name="keyboardListener"
+                TextChanged="OnTextChanged"
+                WidthRequest="0"
+                HeightRequest="0"/>
         </Grid>
     </Grid>
 </ContentPage>

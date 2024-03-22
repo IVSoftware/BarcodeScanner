@@ -2,6 +2,7 @@
 // https://youtu.be/XdsFhlazyhk?si=GitLHcozV3nqy-Id
 
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 
@@ -22,6 +23,17 @@ namespace BarcodeScanner
                 TryHarder = true,
             };
             _ = CheckCameraPermission();
+            BindingContext.PropertyChanged += (sender, e) =>
+            {
+                switch (e.PropertyName)
+                {
+                    case nameof(BindingContext.IsDetectingExternal):
+                        keyboardListener.Focus();
+                        break;
+                    default:
+                        break;
+                }
+            };
         }
         async Task CheckCameraPermission()
         {
@@ -48,13 +60,18 @@ namespace BarcodeScanner
             Vibration.Vibrate();
         }
 
-        private void OnEditorFocused(object sender, FocusEventArgs e)
+        private void OnTextChanged(object sender, TextChangedEventArgs e)
         {
-            if(sender is View view)
+            if(sender is Editor editor)
             {
-                Dispatcher.Dispatch(() => { view.IsEnabled = false;  });
-                Dispatcher.Dispatch(() => { view.IsEnabled = true; });
-                Dispatcher.Dispatch(() => { view.Focus(); });
+                if (editor.Text.Contains("\r"))
+                {
+                    BindingContext.BarcodeLabelText = editor.Text.Trim();
+                    BindingContext.IsDetectingExternal = false;
+#if !WINDOWS
+                    Vibration.Vibrate();
+#endif
+                }
             }
         }
     }

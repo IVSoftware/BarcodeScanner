@@ -5,6 +5,7 @@
              x:Class="BarcodeScanner.App">
     <Application.Resources>
         <ResourceDictionary>
+            <local:InvertBoolConverter x:Key="InvertBoolConverter"/>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
