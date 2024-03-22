@@ -1,5 +1,6 @@
 ﻿
 // https://youtu.be/XdsFhlazyhk?si=GitLHcozV3nqy-Id
+// https://github.com/fryndorfer/BarcodeScanner/tree/main
 
 using System.ComponentModel;
 using System.Diagnostics;
@@ -28,9 +29,10 @@ namespace BarcodeScanner
                 switch (e.PropertyName)
                 {
                     case nameof(BindingContext.IsDetectingExternal):
-                        keyboardListener.Focus();
-                        break;
-                    default:
+                        if (BindingContext.IsDetectingExternal)
+                        {
+                            keyboardListener.Focus();
+                        }
                         break;
                 }
             };
@@ -60,17 +62,39 @@ namespace BarcodeScanner
             Vibration.Vibrate();
         }
 
-        private void OnTextChanged(object sender, TextChangedEventArgs e)
+        private void OnKeyboardListenerTextChanged(object sender, TextChangedEventArgs e)
         {
             if(sender is Editor editor)
             {
-                if (editor.Text.Contains("\r"))
+                // 'Not' a reliable way to detect the end of a scan.
+                // See: https://stackoverflow.com/a/75163926/5438626 for rate detection instead.
+                if (editor.Text.Contains("\r")) 
                 {
                     BindingContext.BarcodeLabelText = editor.Text.Trim();
                     BindingContext.IsDetectingExternal = false;
 #if !WINDOWS
                     Vibration.Vibrate();
 #endif
+                }
+            }
+        }
+
+        /// <summary>
+        /// Kill the soft keyboard when it (finally) opens. 
+        /// </summary>
+        private void OnKeyboardListenerFocused(object sender, FocusEventArgs e)
+        {
+            _ = localInterceptKeyboardShow();
+
+            async Task localInterceptKeyboardShow()
+            {
+                while(keyboardListener.IsFocused)
+                {
+                    if(keyboardListener.IsSoftInputShowing())
+                    {
+                        await keyboardListener.HideSoftInputAsync(default);
+                    }
+                    await Task.Delay(TimeSpan.FromMilliseconds(10));
                 }
             }
         }

@@ -118,9 +118,14 @@
                 Command="{Binding CancelCommand}"/>
             <Editor
                 x:Name="keyboardListener"
-                TextChanged="OnTextChanged"
-                WidthRequest="0"
-                HeightRequest="0"/>
+                TextChanged="OnKeyboardListenerTextChanged"
+                Focused="OnKeyboardListenerFocused"
+                WidthRequest="10"
+                TranslationX="-100"
+                HeightRequest="10"
+                TranslationY="-100"
+                VerticalOptions="Start"
+                BackgroundColor="Transparent"/>
         </Grid>
     </Grid>
 </ContentPage>
