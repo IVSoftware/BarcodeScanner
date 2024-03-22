@@ -117,6 +117,9 @@
                 HeightRequest="40"
                 WidthRequest="200"
                 Command="{Binding CancelCommand}"/>
+            <Editor 
+                Focused="OnEditorFocused"
+                BackgroundColor="LightCoral"/>
         </Grid>
     </Grid>
 </ContentPage>

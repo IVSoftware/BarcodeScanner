@@ -47,6 +47,16 @@ namespace BarcodeScanner
             BindingContext.IsDetectingInternal = false;
             Vibration.Vibrate();
         }
+
+        private void OnEditorFocused(object sender, FocusEventArgs e)
+        {
+            if(sender is View view)
+            {
+                Dispatcher.Dispatch(() => { view.IsEnabled = false;  });
+                Dispatcher.Dispatch(() => { view.IsEnabled = true; });
+                Dispatcher.Dispatch(() => { view.Focus(); });
+            }
+        }
     }
     class BarcodeScannerBindingContext : INotifyPropertyChanged
     {
